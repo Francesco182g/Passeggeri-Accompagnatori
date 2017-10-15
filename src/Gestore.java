@@ -45,7 +45,7 @@ public class Gestore {
 			lavoratore.setIdentificatore(i);
 			lavoratore.setOreTotaliServizio(L);
 			lavoratore.setLingua("i");
-			lavoratore.setOreRimaste(12);
+			lavoratore.setOreRimaste(L);
 			lavoratore.setOraFineServizio(0);
 			lavoratore.setIstanza(istanza);
 			lavoratoriClasse1.add(lavoratore);
@@ -58,9 +58,9 @@ public class Gestore {
 			lavoratore = new Lavoratore();			
 
 			lavoratore.setIdentificatore(i);
-			lavoratore.setOreTotaliServizio(12);
+			lavoratore.setOreTotaliServizio(L);
 			lavoratore.setLingua("ie");
-			lavoratore.setOreRimaste(12);
+			lavoratore.setOreRimaste(L);
 			lavoratore.setOraFineServizio(0);
 			lavoratore.setIstanza(istanza);
 			lavoratoriClasse2.add(lavoratore);
@@ -71,9 +71,9 @@ public class Gestore {
 		for(i=divisioneClassi *2+1;i<=divisioneClassi *3;i++) {
 			lavoratore = new Lavoratore();			
 			lavoratore.setIdentificatore(i);
-			lavoratore.setOreTotaliServizio(12);
+			lavoratore.setOreTotaliServizio(L);
 			lavoratore.setLingua("ief");
-			lavoratore.setOreRimaste(12);
+			lavoratore.setOreRimaste(L);
 			lavoratore.setOraFineServizio(0);
 			lavoratore.setIstanza(istanza);
 			lavoratoriClasse3.add(lavoratore);
@@ -86,9 +86,9 @@ public class Gestore {
 		for(i=divisioneClassi *3+1;i<=divisioneClassi *4;i++) {
 			lavoratore = new Lavoratore();			
 			lavoratore.setIdentificatore(i);
-			lavoratore.setOreTotaliServizio(12);
+			lavoratore.setOreTotaliServizio(L);
 			lavoratore.setLingua("ies");
-			lavoratore.setOreRimaste(12);
+			lavoratore.setOreRimaste(L);
 			lavoratore.setOraFineServizio(0);
 			lavoratore.setIstanza(istanza);
 			lavoratoriClasse4.add(lavoratore);
@@ -100,9 +100,9 @@ public class Gestore {
 		for(i=divisioneClassi *4+1;i<=n;i++) {
 			lavoratore = new Lavoratore();			
 			lavoratore.setIdentificatore(i);
-			lavoratore.setOreTotaliServizio(12);
+			lavoratore.setOreTotaliServizio(L);
 			lavoratore.setLingua("iefs");
-			lavoratore.setOreRimaste(12);
+			lavoratore.setOreRimaste(L);
 			lavoratore.setOraFineServizio(0);
 			lavoratore.setIstanza(istanza);
 			lavoratoriClasse5.add(lavoratore);
