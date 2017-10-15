@@ -199,6 +199,7 @@ public class Gestore {
 				}
 			}
 		}
+		System.out.println("SELECTION SORT: Ordinamento brutale completato!");
 	}
 
 	/*
