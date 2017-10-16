@@ -19,13 +19,26 @@ public class MainTest {
 		if (s1 == 1) {
 			
 		} else if(s1 == 2) {
-			
+			String scelta2 = JOptionPane.showInputDialog("Definisci il numero di passeggeri");
+			int n = Integer.parseInt(scelta2);
+			String scelta3 = JOptionPane.showInputDialog("Definisci il numero di accompagnatori");
+			int m = Integer.parseInt(scelta3);
+			String l = JOptionPane.showInputDialog("Definisci la durata del turno di ogni accompagnatore");
+			int L = Integer.parseInt(l);
+			String istanza = JOptionPane.showInputDialog("Definisci il nome dell'istanza:");
+			Gestore gestore = new Gestore();
+			gestore.aggiungiAccompagnatori(m, L, istanza);
+			gestore.aggiungiPasseggeri(n, istanza);
+			gestore.ordinaPasseggeriInArray();
+			System.out.println("Ho ordinato i passeggeri.");
+			String stampa = JOptionPane.showInputDialog("Stampa");
+			gestore.stampaArrayLavoratori();
+			gestore.stampaArrayLavori();
 		} else {
 			
 		}
 		
 		
-		String scelta2 = JOptionPane.showInputDialog(":");
 	
 		
 	}

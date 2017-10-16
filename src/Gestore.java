@@ -16,7 +16,7 @@ public class Gestore {
 
 	private Lavoro lavoro;
 	private Lavoratore lavoratore;
-	
+
 	private int divisioniLavori;
 	private int divisioneClassi;
 	private int n;
@@ -78,7 +78,6 @@ public class Gestore {
 			lavoratore.setIstanza(istanza);
 			lavoratoriClasse3.add(lavoratore);
 			//System.out.println("Aggiungo lavoratore: "+lavoratore.toString());
-
 
 		}
 
@@ -209,13 +208,294 @@ public class Gestore {
 	public synchronized void trovaAccompagnatore(int c1, int c2) {
 		int criterio1 = verificaCriterio(c1);
 		int criterio2 = verificaCriterio(c2);
+
+
+	}
+	
+	/*
+	 * Cerca Lavoratori Classe 1 In Servizio Cmin, Cmax, Random
+	 */
+	public synchronized int cercaLavoratoreClasse1ISCmin(int durata, int oraInizio, int oraFine) {
+		int id = 0;
+		boolean trovato = false;
+		for(int i=0; i< lavoratoriClasse1.size(); i++) {
+			
+			//Cerco un lavoratore in Servizio
+			if(lavoratoriClasse1.get(i).isInServizio() == true && trovato==false) {
+				if(durata <= lavoratoriClasse1.get(i).getOreRimaste() && oraFine <= lavoratoriClasse1.get(i).getOraFineServizio()) {
+					id = lavoratoriClasse1.get(i).getIdentificatore();
+					Lavoratore l = new Lavoratore();
+					l = lavoratoriClasse1.get(i);
+					l.setOreRimaste(l.getOreRimaste() - durata);
+					trovato = true;
+					break;
+
+				} else {
+					System.out.println("Niente");
+				}
+			}
+		}
 		
+	 return id;
+	}
+	
+	public synchronized int cercaLavoratoreClasse1ISCmax(int durata, int oraInizio, int oraFine) {
+		int id = 0;
+		boolean trovato = false;
+		for(int i=lavoratoriClasse1.size(); i>0; i--) {
+			
+			//Cerco un lavoratore in Servizio
+			if(lavoratoriClasse1.get(i).isInServizio() == true && trovato==false) {
+				if(durata <= lavoratoriClasse1.get(i).getOreRimaste() && oraFine <= lavoratoriClasse1.get(i).getOraFineServizio()) {
+					id = lavoratoriClasse1.get(i).getIdentificatore();
+					Lavoratore l = new Lavoratore();
+					l = lavoratoriClasse1.get(i);
+					l.setOreRimaste(l.getOreRimaste() - durata);
+					trovato = true;
+					break;
+
+				} else {
+					System.out.println("Niente");
+				}
+			}
+		}
 		
+	 return id;
 	}
 
-/*
- * Metodo per la verifica del criterio inserito
- */
+	public synchronized int cercaLavoratoreClasse1ISRandom(int durata, int oraInizio, int oraFine) {
+		int id = 0;
+		boolean trovato = false;
+		Random random = new Random();
+		for(int i=0; i< lavoratoriClasse1.size(); random.nextInt(lavoratoriClasse1.size())) {
+			
+			//Cerco un lavoratore in Servizio
+			if(lavoratoriClasse1.get(i).isInServizio() == true && trovato==false) {
+				if(durata <= lavoratoriClasse1.get(i).getOreRimaste() && oraFine <= lavoratoriClasse1.get(i).getOraFineServizio()) {
+					id = lavoratoriClasse1.get(i).getIdentificatore();
+					Lavoratore l = new Lavoratore();
+					l = lavoratoriClasse1.get(i);
+					l.setOreRimaste(l.getOreRimaste() - durata);
+					trovato = true;
+					break;
+
+				} else {
+					System.out.println("Niente");
+				}
+			}
+		}
+		
+	 return id;
+	}
+	
+	public synchronized int cercaLavoratoreClasse1NISCmin(int durata, int oraInizio, int oraFine) {
+		int id = 0;
+		
+		return id;
+	}
+	
+	/*
+	 * Metodo per la ricerca di un lavoratore italiano nelle classi da 1 a 5
+	 */
+	public synchronized int cercaLavoratoreItalianoCminCmin(int durata, int oraInizio, int oraFine) {
+		int id = 0;
+
+		boolean trovatoclasse1 = false;
+		boolean trovatoclasse2 = false;
+		boolean trovatoclasse3 = false;
+		boolean trovatoclasse4 = false;
+		boolean trovatoclasse5 = false;
+		boolean trovato = false;
+		for(int i=0; i<lavoratoriClasse1.size(); i++) {
+			//Cerco un lavoratore in Servizio
+
+			if(lavoratoriClasse1.get(i).isInServizio() == true) {
+				if(durata <= lavoratoriClasse1.get(i).getOreRimaste() && oraFine <= lavoratoriClasse1.get(i).getOraFineServizio()) {
+					id = lavoratoriClasse1.get(i).getIdentificatore();
+					Lavoratore l = new Lavoratore();
+					l = lavoratoriClasse1.get(i);
+					l.setOreRimaste(l.getOreRimaste() - durata);
+					trovatoclasse1 = true;
+					trovato = true;
+					break;
+				}
+				else {
+					System.out.println("Niente");
+				}
+			}
+			//Cerco un lavoratore che non è già in servizio
+			//Controllo quali sono tutti i lavoratori che lo possono svolgere e scelgo 
+			//un criterio random, 
+			else if(lavoratoriClasse1.get(i).isInServizio() == false && trovato==false) {
+
+				System.out.println("Entro nell'else");
+				id = lavoratoriClasse1.get(i).getIdentificatore();
+				Lavoratore l = new Lavoratore();
+				l = lavoratoriClasse1.get(i);
+				l.setInServizio(true);
+				l.setOraFineServizio(oraInizio + l.getOreTotaliServizio());
+				l.setOreRimaste(l.getOreTotaliServizio() - durata);
+				trovatoclasse1 = true;
+				trovato = true;
+				break;
+			}
+		}
+		/*
+		 * Cerca nela Classe dei lavoratori 2
+		 */
+		if(trovatoclasse1 == false && trovato==false) {
+
+			for(int i=0; i<lavoratoriClasse2.size(); i++) {
+				//Cerco un lavoratore in Servizio
+				if(lavoratoriClasse2.get(i).isInServizio() == true && trovato==false) {
+					if(durata <= lavoratoriClasse2.get(i).getOreRimaste() && oraFine <= lavoratoriClasse2.get(i).getOraFineServizio()) {
+						id = lavoratoriClasse2.get(i).getIdentificatore();
+						Lavoratore l = new Lavoratore();
+						l = lavoratoriClasse2.get(i);
+						l.setOreRimaste(l.getOreRimaste() - durata);
+						trovatoclasse2 = true;
+						trovato = true;
+						break;
+					}
+					else {
+						System.out.println("Niente");
+					}
+				}
+
+				//Cerco un lavoratore che non è già in servizio
+				else if(lavoratoriClasse2.get(i).isInServizio() == false && trovato==false) {
+					//System.out.println("Entro nell'else");
+					id = lavoratoriClasse2.get(i).getIdentificatore();
+					Lavoratore l = new Lavoratore();
+					l = lavoratoriClasse2.get(i);
+					l.setInServizio(true);
+					l.setOraFineServizio(oraInizio + 12);
+					l.setOreRimaste(12 - durata);
+					trovatoclasse2 = true;
+					trovato = true;
+					break;
+				}
+			}
+		}
+		/*
+		 * Cerca lavoratori classe3
+		 */
+		if(trovatoclasse2 == false && trovato==false) {
+
+			for(int i=0; i<lavoratoriClasse3.size(); i++) {
+				//Cerco un lavoratore in Servizio
+				if(lavoratoriClasse3.get(i).isInServizio() == true && trovato==false) {
+					if(durata <= lavoratoriClasse3.get(i).getOreRimaste() && oraFine <= lavoratoriClasse3.get(i).getOraFineServizio()) {
+						id = lavoratoriClasse3.get(i).getIdentificatore();
+						Lavoratore l = new Lavoratore();
+						l = lavoratoriClasse3.get(i);
+						l.setOreRimaste(l.getOreRimaste() - durata);
+						trovatoclasse3 = true;
+						trovato = true;
+						break;
+
+					}
+					else {
+						System.out.println("Niente");
+					}
+				}
+				//Cerco un lavoratore che non è già in servizio
+				else if(lavoratoriClasse3.get(i).isInServizio() == false && trovato==false) {	
+					//System.out.println("Entro nell'else");
+					id = lavoratoriClasse3.get(i).getIdentificatore();
+					Lavoratore l = new Lavoratore();
+					l = lavoratoriClasse3.get(i);
+					l.setInServizio(true);
+					l.setOraFineServizio(oraInizio + 12);
+					l.setOreRimaste(12 - durata);
+					trovatoclasse3 = true;
+					trovato = true;
+					break;
+				}
+			}
+		}
+
+		/*
+		 * Cerca lavoratori classe4
+		 */
+		if(trovatoclasse3 == false && trovato==false) {
+			for(int i=0; i<lavoratoriClasse4.size(); i++) {
+				//Cerco un lavoratore in Servizio
+				if(lavoratoriClasse4.get(i).isInServizio() == true && trovato==false) {
+					if(durata <= lavoratoriClasse4.get(i).getOreRimaste() && oraFine <= lavoratoriClasse4.get(i).getOraFineServizio()) {
+						id = lavoratoriClasse4.get(i).getIdentificatore();
+						Lavoratore l = new Lavoratore();
+						l = lavoratoriClasse4.get(i);
+						l.setOreRimaste(l.getOreRimaste() - durata);
+						trovatoclasse4 = true;
+						trovato = true;
+						break;
+
+					}
+					else {
+						System.out.println("Niente");
+					}
+				}
+				//Cerco un lavoratore che non è già in servizio
+				else if(lavoratoriClasse4.get(i).isInServizio() == false && trovato==false) {	
+					//System.out.println("Entro nell'else");
+					id = lavoratoriClasse4.get(i).getIdentificatore();
+					Lavoratore l = new Lavoratore();
+					l = lavoratoriClasse4.get(i);
+					l.setInServizio(true);
+					l.setOraFineServizio(oraInizio + 12);
+					l.setOreRimaste(12 - durata);
+					trovatoclasse4 = true;
+					trovato = true;
+					break;
+				}
+			}
+		}
+
+		/*
+		 * Cerca lavoratori classe5
+		 */
+		if(trovatoclasse4 == false && trovato==false) {
+			for(int i=0; i<lavoratoriClasse5.size(); i++) {
+				//Cerco un lavoratore in Servizio
+				if(lavoratoriClasse5.get(i).isInServizio() == true && trovato==false) {
+					if(durata <= lavoratoriClasse5.get(i).getOreRimaste() && oraFine <= lavoratoriClasse5.get(i).getOraFineServizio()) {
+						id = lavoratoriClasse5.get(i).getIdentificatore();
+						Lavoratore l = new Lavoratore();
+						l = lavoratoriClasse5.get(i);
+						l.setOreRimaste(l.getOreRimaste() - durata);
+						trovatoclasse5 = true;
+						trovato = true;
+						break;
+
+					}
+					else {
+						System.out.println("Niente");
+					}
+				}
+				//Cerco un lavoratore che non è già in servizio
+				else if(lavoratoriClasse5.get(i).isInServizio() == false && trovato==false) {	
+					//System.out.println("Entro nell'else");
+					id = lavoratoriClasse5.get(i).getIdentificatore();
+					Lavoratore l = new Lavoratore();
+					l = lavoratoriClasse5.get(i);
+					l.setInServizio(true);
+					l.setOraFineServizio(oraInizio + 12);
+					l.setOreRimaste(12 - durata);
+					trovatoclasse5 = true;
+					trovato = true;
+					break;
+				}
+			}
+		}
+
+		return id;
+	}
+
+
+	/*
+	 * Metodo per la verifica del criterio inserito
+	 */
 	public synchronized int verificaCriterio(int criterio) {
 		int risultatoVerifica = 0;
 		if(criterio == 1) {
