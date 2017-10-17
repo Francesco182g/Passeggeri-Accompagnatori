@@ -43,13 +43,13 @@ public class MainTest {
 			JOptionPane.showInputDialog("Stampa");
 			gestore.stampaArrayLavoratori();
 			gestore.stampaArrayLavori();
+			
 		} else {
 			
 		}
 		
-		
 	
-		
+		System.out.println("Arrivederci!");
 	}
 	
 	
