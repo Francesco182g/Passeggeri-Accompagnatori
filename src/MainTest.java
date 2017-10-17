@@ -1,4 +1,6 @@
-
+/* 
+	@copy Coded by Francesco Garofalo 2017
+ */
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -25,13 +27,20 @@ public class MainTest {
 			int m = Integer.parseInt(scelta3);
 			String l = JOptionPane.showInputDialog("Definisci la durata del turno di ogni accompagnatore");
 			int L = Integer.parseInt(l);
+			String criterio1 = JOptionPane.showInputDialog("Definisci il criterio per gli accompagnatori in servizio. 1.Cmin, 2.Cmax, 3.Random");
+			int c1 = Integer.parseInt(criterio1);
+			String criterio2 = JOptionPane.showInputDialog("Definisci il criterio per gli accompagnatori non in servizio. 1.Cmin, 2.Cmax, 3.Random");
+			int c2 = Integer.parseInt(criterio2);
 			String istanza = JOptionPane.showInputDialog("Definisci il nome dell'istanza:");
 			Gestore gestore = new Gestore();
 			gestore.aggiungiAccompagnatori(m, L, istanza);
 			gestore.aggiungiPasseggeri(n, istanza);
 			gestore.ordinaPasseggeriInArray();
+			gestore.stampaArrayLavori();
+			JOptionPane.showInputDialog("Ordino i passeggeri:");
+			gestore.trovaAccompagnatore(c1, c2);
 			System.out.println("Ho ordinato i passeggeri.");
-			String stampa = JOptionPane.showInputDialog("Stampa");
+			JOptionPane.showInputDialog("Stampa");
 			gestore.stampaArrayLavoratori();
 			gestore.stampaArrayLavori();
 		} else {
