@@ -34,7 +34,7 @@ public class DatabaseQuery {
 	 * @throws SQLException
 	 */
 	//@SuppressWarnings({ "rawtypes", "unchecked" })
-	public synchronized static ArrayList getLavori() throws SQLException{
+	public synchronized static ArrayList getLavori(String istanza) throws SQLException{
 		Connection connection = null;
 		PreparedStatement psListaLavori= null;
 		lavori = new ArrayList<Lavoro>();
@@ -42,6 +42,7 @@ public class DatabaseQuery {
 			connection = Database.getConnection();
 			psListaLavori = connection.prepareStatement(queryGetLavori);
 
+			psListaLavori.setString(7, istanza);
 			ResultSet rs = psListaLavori.executeQuery();
 
 			while(rs.next()){
@@ -52,7 +53,7 @@ public class DatabaseQuery {
 				pr.setDurata(rs.getInt("durata"));
 				pr.setOraFine(rs.getInt("oraFine"));
 				pr.setLavoratoreAssegnato(rs.getInt("lavoratoreAssegnato"));
-				pr.setOraFine(pr.getOraInizio() + pr.getDurata());
+				pr.setIstanza(rs.getString("istanza"));
 				//pr.setLavoratoreAssegnato("NULLA PER ORA");
 				lavori.add(pr);
 			}
@@ -82,14 +83,15 @@ public class DatabaseQuery {
 	 * @return ArrayList Prodotti
 	 * @throws SQLException
 	 */
-	public synchronized static ArrayList getLavoratori() throws SQLException{
+	public synchronized static ArrayList getLavoratori(String istanza) throws SQLException{
 		Connection connection = null;
 		PreparedStatement psListaLavoratori= null;
 		lavoratori = new ArrayList<Lavoratore>();
 		try{
 			connection = Database.getConnection();
 			psListaLavoratori = connection.prepareStatement(queryGetLavoratori);
-
+			
+			psListaLavoratori.setString(7, istanza);
 			ResultSet rs = psListaLavoratori.executeQuery();
 
 			while(rs.next()){
@@ -99,6 +101,8 @@ public class DatabaseQuery {
 				pr.setLingua(rs.getString("lingua"));
 				pr.setOreTotaliServizio(rs.getInt("oraFineServizio"));
 				pr.setInServizio(rs.getBoolean("inServizio"));
+				pr.setOraLibero(rs.getInt("oraLibero"));
+				pr.setIstanza(rs.getString("istanza"));
 				lavoratori.add(pr);
 			}
 
@@ -141,6 +145,8 @@ public class DatabaseQuery {
 			psAddLavoratore.setInt(4, lavoratore.getOreRimaste());
 			psAddLavoratore.setInt(5, lavoratore.getOraFineServizio());
 			psAddLavoratore.setBoolean(6, lavoratore.isInServizio());
+			psAddLavoratore.setInt(7, lavoratore.getOraLibero());
+			psAddLavoratore.setString(8, lavoratore.getIstanza());
 			psAddLavoratore.executeUpdate();
 
 			connection.commit();
@@ -178,6 +184,7 @@ public class DatabaseQuery {
 			psAddLavoro.setInt(4, lavoro.getDurata());
 			psAddLavoro.setInt(5, lavoro.getOraFine());
 			psAddLavoro.setInt(6, lavoro.getLavoratoreAssegnato());
+			psAddLavoro.setString(7, lavoro.getIstanza());
 			psAddLavoro.executeUpdate();
 			connection.commit();
 			System.out.println("Aggiungo un lavoro: "+ psAddLavoro.toString());
@@ -194,20 +201,20 @@ public class DatabaseQuery {
 	}
 	
 	/**
-	 * Rimuove un lavoro nel database
+	 * Rimuove un lavoro dando come parametro l'istanza nel database
 	 * 
-	 * @param codiceLavoro
+	 * @param istanza
 	 * @return boolean value
 	 * @throws SQLException
 	 */
-	public synchronized static boolean delLavoro(int codiceLavoro) throws SQLException{
+	public synchronized static boolean delLavoro(int istanza) throws SQLException{
 		Connection connection = null;
 		PreparedStatement psDelLavoro = null;
 
 		try{
 			connection = Database.getConnection();
 			psDelLavoro = connection.prepareStatement(queryDelLavoro);
-			psDelLavoro.setInt(1, codiceLavoro);
+			psDelLavoro.setInt(1, istanza);
 
 			psDelLavoro.executeUpdate();
 
@@ -224,20 +231,20 @@ public class DatabaseQuery {
 		return true;
 	}
 	/**
-	 * Rimuove un lavoratore nel database
+	 * Rimuove un lavoratore con l'istanza data come parametro nel database
 	 * 
-	 * @param idLavoratore
+	 * @param istanza
 	 * @return boolean value
 	 * @throws SQLException
 	 */
-	public synchronized static boolean delLavoratore(int idLavoratore) throws SQLException{
+	public synchronized static boolean delLavoratore(int istanza) throws SQLException{
 		Connection connection = null;
 		PreparedStatement psDelLavoratore = null;
 
 		try{
 			connection = Database.getConnection();
 			psDelLavoratore = connection.prepareStatement(queryDelLavoratore);
-			psDelLavoratore.setInt(1, idLavoratore);
+			psDelLavoratore.setInt(1, istanza);
 
 			psDelLavoratore.executeUpdate();
 
@@ -257,14 +264,14 @@ public class DatabaseQuery {
 	 * Contiene tutte i nomi sql da utilizzare per effettuare le query
 	 */
 	static {
-		queryGetLavori ="SELECT * FROM sys.lavoro";
-		queryGetLavoratori = "SELECT * FROM sys.lavoratore";
+		queryGetLavori ="SELECT * FROM sys.lavoro WHERE istanza = ?";
+		queryGetLavoratori = "SELECT * FROM sys.lavoratore WHERE istanza = ?";
 
-		queryAddLavoro = "INSERT INTO sys.lavoro (codicePasseggero, lingua, oraInizio, durata, oraFine, lavoratoreAssegnato) VALUES (?, ?, ?, ?, ?, ?)";
-		queryAddLavoratore = "INSERT INTO sys.lavoratore (idLavoratore, oreTotaliServizio, lingua, oreRimaste, oraFineServizio, inServizio) VALUES (?, ?, ?, ?, ?, ?)"; 
+		queryAddLavoro = "INSERT INTO sys.lavoro (codicePasseggero, lingua, oraInizio, durata, oraFine, lavoratoreAssegnato, istanza) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		queryAddLavoratore = "INSERT INTO sys.lavoratore (idLavoratore, oreTotaliServizio, lingua, oreRimaste, oraFineServizio, inServizio, oraLibero, istanza) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"; 
 	
-		queryDelLavoro = "DELETE FROM sys.lavoro WHERE codicePasseggero = ?";
-		queryDelLavoratore = "DELETE FROM sys.lavoratore WHERE idLavoratore = ?";
+		queryDelLavoro = "DELETE FROM sys.lavoro WHERE istanza = ?";
+		queryDelLavoratore = "DELETE FROM sys.lavoratore WHERE istanza = ?";
 	}
 	
 }

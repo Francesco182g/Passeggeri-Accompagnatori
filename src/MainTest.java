@@ -6,11 +6,11 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 public class MainTest {
-	
+
 	private static Logger logger; //Definisco il logger per stampare messaggi a sistema
 
 	public static void main (String args []) {	
-		
+
 		logger = Logger.getLogger("com.nomeProgetto"); //Serve per stampare messaggi a sistema
 		//UserInterface e scelta opzioni
 		/*
@@ -19,7 +19,8 @@ public class MainTest {
 		String scelta1 = JOptionPane.showInputDialog("Definisci l'operazione che vuoi effettuare! 1.Usa un'istanza esistente| 2.Crea una nuova istanza");
 		int s1 = Integer.parseInt(scelta1);
 		if (s1 == 1) {
-			
+			String scelta2 = JOptionPane.showInputDialog("Definisci il nome dell'istanza:");
+
 		} else if(s1 == 2) {
 			String scelta2 = JOptionPane.showInputDialog("Definisci il numero di passeggeri");
 			int n = Integer.parseInt(scelta2);
@@ -36,21 +37,26 @@ public class MainTest {
 			gestore.aggiungiAccompagnatori(m, L, istanza);
 			gestore.aggiungiPasseggeri(n, istanza);
 			gestore.ordinaPasseggeriInArray();
-			gestore.stampaArrayLavori();
-			JOptionPane.showInputDialog("Ordino i passeggeri:");
+			String perstok = JOptionPane.showInputDialog("Vuoi rendere persistente l'istanza? 1.Si 2.NO");
+			int scelta = Integer.parseInt(perstok);
+			if(scelta == 1) {
+
+			}
+			else {
+
+			}
 			gestore.trovaAccompagnatore(c1, c2);
 			System.out.println("Ho ordinato i passeggeri.");
 			JOptionPane.showInputDialog("Stampa");
 			gestore.stampaArrayLavoratori();
 			gestore.stampaArrayLavori();
-			
-		} else {
-			
-		}
-		
-	
+
+		} 
 		System.out.println("Arrivederci!");
 	}
-	
-	
+
+
+
 }
+
+

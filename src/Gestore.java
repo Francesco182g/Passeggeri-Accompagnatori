@@ -2171,22 +2171,60 @@ public class Gestore {
 	}
 
 
-	/*
-	 * Metodi Database
-	 */
-	public synchronized void svuotaDBPasseggeri() throws SQLException {
-		for(int i=0; i<n; i++) {
-			DatabaseQuery.delLavoro(i);
+	public synchronized void popolaLavoriDB() throws SQLException {
+		for(int i=0; i<lavori.size(); i++) {
+			DatabaseQuery.addLavoro(lavori.get(i));
 		}
 	}
 
-	public synchronized void svuotaDBAccompagnatori() throws SQLException {
-		for(int j=0; j<m; j++) {
-			DatabaseQuery.delLavoratore(j);
+	public synchronized void popolaLavoratoriDB() throws SQLException{
+		for (int i=0; i<lavoratoriClasse1.size(); i++) {
+			DatabaseQuery.addLavoratore(lavoratoriClasse1.get(i));
+		}
+		for (int i=0; i<lavoratoriClasse2.size(); i++) {
+			DatabaseQuery.addLavoratore(lavoratoriClasse2.get(i));
+		}
+		for (int i=0; i<lavoratoriClasse3.size(); i++) {
+			DatabaseQuery.addLavoratore(lavoratoriClasse3.get(i));
+		}
+		for (int i=0; i<lavoratoriClasse4.size(); i++) {
+			DatabaseQuery.addLavoratore(lavoratoriClasse4.get(i));
+		}
+		for (int i=0; i<lavoratoriClasse5.size(); i++) {
+			DatabaseQuery.addLavoratore(lavoratoriClasse5.get(i));
 		}
 	}
 
-
+	public synchronized void getLavoriDB(String istanza) throws SQLException{
+		lavori = DatabaseQuery.getLavori(istanza);
+		System.out.println("STAMPO I LAVORI_________________________________");
+		System.out.println("Lavori ordinati------------------------------------------------");
+		for (int i=0; i<lavori.size(); i++) {
+			System.out.println(lavori.get(i));
+		}
+	}
+	
+	public synchronized void getLavoratoriDB(String istanza) throws SQLException{
+		ArrayList <Lavoratore> lavoratori = new ArrayList<>();
+		lavoratori = DatabaseQuery.getLavoratori(istanza);
+		for(int i=0; i<lavoratori.size(); i++) {
+			if(lavoratori.get(i).getLingua()=="i") {
+				lavoratoriClasse1.add(lavoratori.get(i));
+			}
+			if(lavoratori.get(i).getLingua()=="ie") {
+				lavoratoriClasse2.add(lavoratori.get(i));
+			}
+			if(lavoratori.get(i).getLingua()=="ief") {
+				lavoratoriClasse3.add(lavoratori.get(i));
+			}
+			if(lavoratori.get(i).getLingua()=="ies") {
+				lavoratoriClasse4.add(lavoratori.get(i));
+			}
+			if(lavoratori.get(i).getLingua()=="iefs") {
+				lavoratoriClasse5.add(lavoratori.get(i));
+			}
+		}
+	}
 
 
 	/*
