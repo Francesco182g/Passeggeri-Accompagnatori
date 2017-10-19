@@ -18,7 +18,7 @@ public class MainTest {
 		/*
 		 * Prima scelta Get istanza
 		 */
-		String scelta1 = JOptionPane.showInputDialog("Definisci l'operazione che vuoi effettuare! 1.Usa un'istanza esistente| 2.Crea una nuova istanza");
+		String scelta1 = JOptionPane.showInputDialog("Definisci l'operazione che vuoi effettuare! 1.Usa un'istanza esistente | 2.Crea una nuova istanza | 3.Cancella un'istanza dal database");
 		int s1 = Integer.parseInt(scelta1);
 		
 		if (s1 == 1) {
@@ -43,8 +43,7 @@ public class MainTest {
 			String criterio2 = JOptionPane.showInputDialog("Definisci il criterio per gli accompagnatori non in servizio. 1.Cmin, 2.Cmax, 3.Random");
 			int c2 = Integer.parseInt(criterio2);
 			
-			
-			gestore.ordinaPasseggeriInArray();
+			//gestore.ordinaPasseggeriInArray();
 			gestore.trovaAccompagnatore(c1, c2);
 			JOptionPane.showInputDialog("Stampa");
 			gestore.stampaArrayLavoratori();
@@ -106,7 +105,16 @@ public class MainTest {
 			gestore.stampaArrayLavoratori();
 			gestore.stampaArrayLavori();
 
-		} 
+		} else if(s1 == 3) {
+			String istanza = JOptionPane.showInputDialog("Inserisci il nome dell'istanza: ");
+			try {
+				gestore.delIstanza(istanza);
+				logger.info("L'istanza:" +istanza+ "è stata cancellata.");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		System.out.println("Arrivederci!");
 	}
 

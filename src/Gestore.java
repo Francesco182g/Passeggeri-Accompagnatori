@@ -2204,7 +2204,10 @@ public class Gestore {
 		stampaArrayLavoratori();
 	}
 
-
+	public synchronized void delIstanza(String istanza) throws SQLException{
+		DatabaseQuery.delLavoratore(istanza);
+		DatabaseQuery.delLavoro(istanza);
+	}
 	/*
 	 * Metodi di stampa su console
 	 */	
