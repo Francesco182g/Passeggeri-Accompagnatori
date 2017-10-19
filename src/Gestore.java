@@ -11,19 +11,21 @@ import java.util.logging.Logger;
 
 public class Gestore {
 	//private ArrayList lavoratori, Array che contiene tutti i lavoratori (NON UTILIZZATO)
-	private ArrayList <Lavoratore> lavoratoriClasse1 = new ArrayList<>(); //Italiano
-	private ArrayList <Lavoratore> lavoratoriClasse2 = new ArrayList<>(); //Italiano,Inglese
-	private ArrayList <Lavoratore> lavoratoriClasse3 = new ArrayList<>();; //Italiano,Inglese,Francese
-	private ArrayList <Lavoratore> lavoratoriClasse4 = new ArrayList<>(); //Italiano,Inglese,Spagnolo
-	private ArrayList <Lavoratore> lavoratoriClasse5 = new ArrayList<>(); //Italiano, Inglese, Francese, Spagnolo
-	private ArrayList <Lavoro> lavori = new ArrayList<>();
-	private ArrayList <Lavoro> lavoriSenzaAccompagnatori = new ArrayList<>();
+	public ArrayList <Lavoratore> lavoratoriClasse1 = new ArrayList<>(); //Italiano
+	public ArrayList <Lavoratore> lavoratoriClasse2 = new ArrayList<>(); //Italiano,Inglese
+	public ArrayList <Lavoratore> lavoratoriClasse3 = new ArrayList<>();; //Italiano,Inglese,Francese
+	public ArrayList <Lavoratore> lavoratoriClasse4 = new ArrayList<>(); //Italiano,Inglese,Spagnolo
+	public ArrayList <Lavoratore> lavoratoriClasse5 = new ArrayList<>(); //Italiano, Inglese, Francese, Spagnolo
+	public ArrayList <Lavoro> lavori = new ArrayList<>();
+	//private ArrayList <Lavoro> lavoriSenzaAccompagnatori = new ArrayList<>();
+	//private ArrayList <Lavoratore> lavoratori = new ArrayList<>(); //TUTTI DAL DATABASE
 
 	private Lavoro lavoro;
 	private Lavoratore lavoratore;
 
 	private int divisioniLavori;
 	private int divisioneClassi;
+	
 	private int n;
 	private int m;
 
@@ -206,35 +208,36 @@ public class Gestore {
 		System.out.println("SELECTION SORT: Ordinamento brutale completato!");
 	}
 
-
 	/*
 	 * Controllo per ogni passeggero se è presente un accompagnatore che possa servirlo
 	 * @Param due criteri inseriti dall'utente 
 	 */
 	public synchronized void trovaAccompagnatore(int c1, int c2) {
+		logger.info("ESEGUO TROVA ACCOMPAGNATORE");
 		for(int i=0; i< lavori.size(); i++) {
-			if(lavori.get(i).getLingua()== "ita") {
+			if(lavori.get(i).getLingua().equals("ita")) {
+				logger.info("Istanza: " +lavori.get(i).toString());
 				int id = trovaAccompagnatoreItaliano(lavori.get(i).getDurata(), lavori.get(i).getOraInizio(), lavori.get(i).getOraFine(), c1, c2);
 				if(id != 0) {
 					lavori.get(i).setLavoratoreAssegnato(id);
 				} else {
 					logger.info("Nessun accompagnatore trovato per: "+lavori.get(i).getCodicePasseggero());
 				}
-			} if(lavori.get(i).getLingua()== "eng") {
+			} if(lavori.get(i).getLingua().equals("eng")) {
 				int id = trovaAccompagnatoreInglese(lavori.get(i).getDurata(), lavori.get(i).getOraInizio(), lavori.get(i).getOraFine(), c1, c2);
 				if(id != 0) {
 					lavori.get(i).setLavoratoreAssegnato(id);
 				} else {
 					logger.info("Nessun accompagnatore trovato per: "+lavori.get(i).getCodicePasseggero());
 				}
-			} if(lavori.get(i).getLingua()== "fra") {
+			} if(lavori.get(i).getLingua().equals("fra")) {
 				int id = trovaAccompagnatoreFrancese(lavori.get(i).getDurata(), lavori.get(i).getOraInizio(), lavori.get(i).getOraFine(), c1, c2);
 				if(id != 0) {
 					lavori.get(i).setLavoratoreAssegnato(id);
 				} else {
 					logger.info("Nessun accompagnatore trovato per: "+lavori.get(i).getCodicePasseggero());
 				}
-			} if(lavori.get(i).getLingua()== "spa") {
+			} if(lavori.get(i).getLingua().equals("spa")) {
 				int id = trovaAccompagnatoreSpagnolo(lavori.get(i).getDurata(), lavori.get(i).getOraInizio(), lavori.get(i).getOraFine(), c1, c2);
 				if(id != 0) {
 					lavori.get(i).setLavoratoreAssegnato(id);
@@ -245,6 +248,8 @@ public class Gestore {
 		}
 	}
 
+	
+	
 	/*
 	 * LINGUA ITALIANA
 	 */
@@ -1444,7 +1449,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1469,7 +1474,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1494,7 +1499,7 @@ public class Gestore {
 
 					break;
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1593,7 +1598,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					////System.out.println("Niente");
 				}
 			}
 		}
@@ -1618,7 +1623,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1643,7 +1648,7 @@ public class Gestore {
 
 					break;
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1743,7 +1748,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1768,7 +1773,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1793,7 +1798,7 @@ public class Gestore {
 
 					break;
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1893,7 +1898,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1918,7 +1923,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -1943,7 +1948,7 @@ public class Gestore {
 
 					break;
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -2043,7 +2048,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -2068,7 +2073,7 @@ public class Gestore {
 					break;
 
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -2093,7 +2098,7 @@ public class Gestore {
 
 					break;
 				} else {
-					System.out.println("Niente");
+					//System.out.println("Niente");
 				}
 			}
 		}
@@ -2170,60 +2175,33 @@ public class Gestore {
 		return id;
 	}
 
-
+/*
+ * 
+ */
 	public synchronized void popolaLavoriDB() throws SQLException {
-		for(int i=0; i<lavori.size(); i++) {
+		for (int i=0; i<lavori.size(); i++) {
 			DatabaseQuery.addLavoro(lavori.get(i));
 		}
 	}
 
-	public synchronized void popolaLavoratoriDB() throws SQLException{
-		for (int i=0; i<lavoratoriClasse1.size(); i++) {
-			DatabaseQuery.addLavoratore(lavoratoriClasse1.get(i));
-		}
-		for (int i=0; i<lavoratoriClasse2.size(); i++) {
-			DatabaseQuery.addLavoratore(lavoratoriClasse2.get(i));
-		}
-		for (int i=0; i<lavoratoriClasse3.size(); i++) {
-			DatabaseQuery.addLavoratore(lavoratoriClasse3.get(i));
-		}
-		for (int i=0; i<lavoratoriClasse4.size(); i++) {
-			DatabaseQuery.addLavoratore(lavoratoriClasse4.get(i));
-		}
-		for (int i=0; i<lavoratoriClasse5.size(); i++) {
-			DatabaseQuery.addLavoratore(lavoratoriClasse5.get(i));
-		}
+	public synchronized void popolaLavoratoriDB(String istanza, int m, int L) throws SQLException{
+		DatabaseQuery.addLavoratore(m, L, istanza);
 	}
 
+	
 	public synchronized void getLavoriDB(String istanza) throws SQLException{
-		lavori = DatabaseQuery.getLavori(istanza);
-		System.out.println("STAMPO I LAVORI_________________________________");
-		System.out.println("Lavori ordinati------------------------------------------------");
-		for (int i=0; i<lavori.size(); i++) {
-			System.out.println(lavori.get(i));
+		ArrayList <Lavoro> lav = new ArrayList<>();
+		lav = DatabaseQuery.getLavori(istanza);
+		for(int i=0; i<lav.size(); i++) {
+			lavori.add(i, lav.get(i));
 		}
 	}
 	
 	public synchronized void getLavoratoriDB(String istanza) throws SQLException{
-		ArrayList <Lavoratore> lavoratori = new ArrayList<>();
-		lavoratori = DatabaseQuery.getLavoratori(istanza);
-		for(int i=0; i<lavoratori.size(); i++) {
-			if(lavoratori.get(i).getLingua()=="i") {
-				lavoratoriClasse1.add(lavoratori.get(i));
-			}
-			if(lavoratori.get(i).getLingua()=="ie") {
-				lavoratoriClasse2.add(lavoratori.get(i));
-			}
-			if(lavoratori.get(i).getLingua()=="ief") {
-				lavoratoriClasse3.add(lavoratori.get(i));
-			}
-			if(lavoratori.get(i).getLingua()=="ies") {
-				lavoratoriClasse4.add(lavoratori.get(i));
-			}
-			if(lavoratori.get(i).getLingua()=="iefs") {
-				lavoratoriClasse5.add(lavoratori.get(i));
-			}
-		}
+		LavoratoreDaDatabase l = DatabaseQuery.getLavoratori(istanza);
+		ArrayList <Lavoratore> lavorator = new ArrayList<>();
+		aggiungiAccompagnatori(l.getM(), l.getL(), istanza);
+		stampaArrayLavoratori();
 	}
 
 
