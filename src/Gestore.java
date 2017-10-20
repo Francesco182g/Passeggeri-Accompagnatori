@@ -5,7 +5,6 @@
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.logging.Logger;
 
 
@@ -3056,6 +3055,7 @@ public class Gestore {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public synchronized void getLavoriDB(String istanza) throws SQLException{
 		ArrayList <Lavoro> lav = new ArrayList<>();
 		lav = DatabaseQuery.getLavori(istanza);
@@ -3066,7 +3066,7 @@ public class Gestore {
 
 	public synchronized void getLavoratoriDB(String istanza) throws SQLException{
 		LavoratoreDaDatabase l = DatabaseQuery.getLavoratori(istanza);
-		ArrayList <Lavoratore> lavorator = new ArrayList<>();
+		//ArrayList <Lavoratore> lavorator = new ArrayList<>();
 		aggiungiAccompagnatori(l.getM(), l.getL(), istanza);
 		stampaArrayLavoratori();
 	}
