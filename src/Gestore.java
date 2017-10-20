@@ -1,5 +1,5 @@
 /* 
-	@copy Coded by Francesco Garofalo 2017
+	@copy Code by Francesco Garofalo 2017
  */
 
 import java.sql.SQLException;
@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 
 public class Gestore {
-	//private ArrayList lavoratori, Array che contiene tutti i lavoratori (NON UTILIZZATO)
+	//private ArrayList lavoratori, Array che contiene tutti i lavoratori //(NON UTILIZZATO)
 	public ArrayList <Lavoratore> lavoratoriClasse1 = new ArrayList<>(); //Italiano
 	public ArrayList <Lavoratore> lavoratoriClasse2 = new ArrayList<>(); //Italiano,Inglese
 	public ArrayList <Lavoratore> lavoratoriClasse3 = new ArrayList<>();; //Italiano,Inglese,Francese
@@ -23,11 +23,16 @@ public class Gestore {
 	private Lavoro lavoro;
 	private Lavoratore lavoratore;
 
-	private int divisioniLavori;
+	//private int divisioniLavori;
 	private int divisioneClassi;
-	
-	private int n;
+
+	//private int n;
 	private int m;
+
+	private long tempoSelectionSort;
+	private long tempoAlgoritmo;
+
+	//private int lavoratoriUtilizzati;
 
 	private static Logger logger; //Definisco il logger per stampare messaggi a sistema
 
@@ -117,20 +122,19 @@ public class Gestore {
 	}
 
 	/*
-	 * Aggiunge i passeggeri
+	 * Aggiungi i passeggeri
 	 */
-	public synchronized void aggiungiPasseggeri(int n, String istanza) {
-		this.n = n;
-		divisioniLavori = n/4;
+	public synchronized void aggiungiPasseggeri(int ita, int eng, int fra, int spa, String istanza) {
+		//this.n = n;
 		//ITA
-		for(int i=0; i<divisioniLavori; i++) {
+		for(int i=0; i<ita; i++) {
 			lavoro = new Lavoro();
 			lavoro.setCodicePasseggero(i);
 			lavoro.setDurata(6);
 			lavoro.setLingua("ita");
 			Random random = new Random();
 			lavoro.setOraInizio(random.nextInt(200));//Valore max 
-			int durata = random.nextInt(10-5) + 5;
+			int durata = random.nextInt(35-5) + 5;
 			lavoro.setDurata(durata);
 			lavoro.setOraFine(lavoro.getOraInizio() + durata);
 			lavoro.setLavoratoreAssegnato(0);
@@ -139,7 +143,7 @@ public class Gestore {
 		}
 
 		//ENG
-		for(int i=divisioniLavori; i<divisioniLavori * 2; i++) {
+		for(int i=ita; i<ita+eng * 2; i++) {
 			lavoro = new Lavoro();
 			lavoro.setCodicePasseggero(i);
 			lavoro.setDurata(6);
@@ -155,7 +159,7 @@ public class Gestore {
 		}
 
 		//FRA	
-		for(int i=divisioniLavori * 2; i<divisioniLavori * 3; i++) {
+		for(int i=ita+eng * 2; i<ita+eng+fra * 3; i++) {
 			lavoro = new Lavoro();
 			lavoro.setCodicePasseggero(i);
 			lavoro.setDurata(6);
@@ -171,7 +175,7 @@ public class Gestore {
 		}
 
 		//SPA	
-		for(int i=divisioniLavori * 3; i<divisioniLavori * 4; i++) {
+		for(int i=ita+eng+fra * 3; i<ita+eng+fra+spa * 4; i++) {
 			lavoro = new Lavoro();
 			lavoro.setCodicePasseggero(i);
 			lavoro.setDurata(6);
@@ -192,6 +196,8 @@ public class Gestore {
 	 * Si occupa di ordinare gli elementi dell'array di passeggeri (Selection Sort)
 	 */
 	public synchronized void ordinaPasseggeriInArray()  {
+		logger.info("Algoritmo ordinamento: Inizio l'ordinamento");
+		long startTime = System.currentTimeMillis();
 		for(int i=0; i<lavori.size(); i++) {
 			for(int j=0; j<lavori.size(); j++) {
 				if(lavori.get(i).getOraInizio() < lavori.get(j).getOraInizio()) {
@@ -201,11 +207,13 @@ public class Gestore {
 					lavoroj = lavori.get(j);
 					lavori.set(i, lavoroj);
 					lavori.set(j, lavoroi);
-					logger.info("Algoritmo ordinamento: sposto: " +i+ " a: " +j);
+					//logger.info("Algoritmo ordinamento: sposto: " +i+ " a: " +j);
 				}
 			}
 		}
-		System.out.println("SELECTION SORT: Ordinamento brutale completato!");
+		long endTime = System.currentTimeMillis();
+		tempoSelectionSort  = endTime - startTime;
+		logger.info("Algoritmo ordinamento: Fine l'ordinamento");
 	}
 
 	/*
@@ -213,7 +221,8 @@ public class Gestore {
 	 * @Param due criteri inseriti dall'utente 
 	 */
 	public synchronized void trovaAccompagnatore(int c1, int c2) {
-		logger.info("ESEGUO TROVA ACCOMPAGNATORE");
+		logger.info("ESEGUO TROVA ACCOMPAGNATORE, Start Cronometro..");
+		long startTime = System.currentTimeMillis();
 		for(int i=0; i< lavori.size(); i++) {
 			if(lavori.get(i).getLingua().equals("ita")) {
 				logger.info("Istanza: " +lavori.get(i).toString());
@@ -246,10 +255,12 @@ public class Gestore {
 				}
 			}
 		}
+		long endTime = System.currentTimeMillis();
+		tempoAlgoritmo  = endTime - startTime;
 	}
 
-	
-	
+
+
 	/*
 	 * LINGUA ITALIANA
 	 */
@@ -291,32 +302,54 @@ public class Gestore {
 		int id = 0;
 		id = cercaLavoratoreClasse1ISCmin(durata, oraInizio, oraFine);
 		if(id == 0) {
-			id = cercaLavoratoreClasse1NISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse2ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
 		} 
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
 				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
-			} 
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
+			}
 		}
 		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
 		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse1NISCmin(durata, oraInizio, oraFine);
+		} if (id == 0) {
+			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
+		} 
+		r = rand.nextInt(2);
+		if(r == 1) {
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
+		} if (id == 0) {
+			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
+		} 
+
+		else {
 			logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -330,32 +363,54 @@ public class Gestore {
 		int id = 0;
 		id = cercaLavoratoreClasse1ISCmin(durata, oraInizio, oraFine);
 		if(id == 0) {
-			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse2ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
 		} 
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
 				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
-			} 
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
+			}
 		}
 		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
 		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
+		} if (id == 0) {
+			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
+		} 
+		r = rand.nextInt(2);
+		if(r == 1) {
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+		} if (id == 0) {
+			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		} 
+
+		else {
 			logger.severe("TrovaAccompagnatoreItalianoCminCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -367,35 +422,57 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreItalianoCmaxCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse1ISCmax(durata, oraInizio, oraFine);
-		if(id == 0) {
-			id = cercaLavoratoreClasse1NISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
-		} 
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
-			} 
+			}
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
+		}		if(id == 0) {
+			id = cercaLavoratoreClasse1ISCmax(durata, oraInizio, oraFine);
+		} 
+		if (id == 0) {
+			id = cercaLavoratoreClasse1NISCmin(durata, oraInizio, oraFine);
+		} if (id == 0) {
+			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
+		} 
+		r = rand.nextInt(2);
+		if(r == 1) {
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+
+		} else {
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
 		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
-		} else {
-			logger.severe("TrovaAccompagnatoreItalianoCmaxCmin: Non ho trovato Accompagnatori");
+		} 
+
+		else {
+			logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -406,35 +483,56 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreItalianoCmaxCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse1ISCmax(durata, oraInizio, oraFine);
-		if(id == 0) {
-			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
-		} 
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
-			} 
+			}
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
+			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
+		}		if(id == 0) {
+			id = cercaLavoratoreClasse1ISCmax(durata, oraInizio, oraFine);
+		} 
+		if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+			r = rand.nextInt(2);
+		} if(r == 1) {
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
-			logger.severe("TrovaAccompagnatoreItalianoCmaxCmax: Non ho trovato Accompagnatori");
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+		} if (id == 0) {
+			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
+		}if(id == 0) {
+			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
+		} 
+
+		else {
+			logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -447,33 +545,79 @@ public class Gestore {
 		int id = 0;
 		id = cercaLavoratoreClasse1ISCmin(durata, oraInizio, oraFine);
 		if(id == 0) {
-			id = cercaLavoratoreClasse1NISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse2ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
 		} 
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
 				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-			} 
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
+			}
 		}
 		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
-		} else {
-			logger.severe("TrovaAccompagnatoreItalianoCminRandom: Non ho trovato Accompagnatori");
+		} 
+
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean uno = false;
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(uno==false & due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 1 & uno==false) {
+					id = cercaLavoratoreClasse1NISRandom(durata, oraInizio, oraFine);
+					uno=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		}
+
+		else {
+			logger.severe("TrovaAccompagnatoreItalianoCminCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -484,34 +628,80 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreItalianoCmaxRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse1ISCmax(durata, oraInizio, oraFine);
-		if(id == 0) {
-			id = cercaLavoratoreClasse1NISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
-		} 
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-			} 
+			}
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
-		} else {
+			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
+		}		if(id == 0) {
+			id = cercaLavoratoreClasse1ISCmax(durata, oraInizio, oraFine);
+		}  
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean uno = false;
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(uno==false & due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 1 & uno==false) {
+					id = cercaLavoratoreClasse1NISRandom(durata, oraInizio, oraFine);
+					uno=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		}
+
+
+
+		else {
 			logger.severe("TrovaAccompagnatoreItalianoCmaxRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -523,34 +713,79 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreItalianoRandCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse1ISRandom(durata, oraInizio, oraFine);
+		Random rand = new Random();
 		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean uno = false;
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(uno==false & due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 1 & uno==false) {
+					id = cercaLavoratoreClasse1ISRandom(durata, oraInizio, oraFine);
+					uno=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		}		
+		if (id == 0) {
 			id = cercaLavoratoreClasse1NISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
 		} if (id == 0) {
 			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
 		} 
-		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
 				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
-				id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
 				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
-			} 
-		}
-		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
 		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
-		} else {
+		} 
+
+		else {
 			logger.severe("TrovaAccompagnatoreItalianoRandomCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -562,34 +797,77 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreItalianoRandCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse1ISRandom(durata, oraInizio, oraFine);
-		if(id == 0) {
-			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
-		} 
 		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean uno = false;
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(uno==false & due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 1 & uno==false) {
+					id = cercaLavoratoreClasse1ISRandom(durata, oraInizio, oraFine);
+					uno=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		}
 		int r = rand.nextInt(2);
-		if(r == 1) {
+		if (id == 0) {
+			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		} if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 			}
+
 		} else {
 			if (id == 0) {
-				id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
-			} 
-		}
-		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+			}
 		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
-		} else {
+			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
+		}if(id == 0) {
+			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
+		} 
+		else {
 			logger.severe("TrovaAccompagnatoreItalianoRandomCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -601,34 +879,101 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreItalianoRandRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse1ISRandom(durata, oraInizio, oraFine);
-		if(id == 0) {
-			id = cercaLavoratoreClasse1NISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
-		} 
 		Random rand = new Random();
-		int r = rand.nextInt(2);
-		if(r == 1) {
-			if (id == 0) {
-				id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean uno = false;
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(uno==false & due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 1 & uno==false) {
+					id = cercaLavoratoreClasse1ISRandom(durata, oraInizio, oraFine);
+					uno=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
 			}
-		} else {
-			if (id == 0) {
-				id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-			} 
+		}		
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean uno = false;
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(uno==false & due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 1 & uno==false) {
+					id = cercaLavoratoreClasse1NISRandom(durata, oraInizio, oraFine);
+					uno=true;
+					if(id != 0) {
+						uno=true; due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
 		}
-		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
-		} else {
+
+		else {
 			logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -675,30 +1020,51 @@ public class Gestore {
 	public synchronized int trovaAccompagnatoreIngleseCminCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 		id = cercaLavoratoreClasse2ISCmin(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
-		} 
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
 				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
-			} 
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
+			}
 		}
 		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
 		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
+		} 
+		r = rand.nextInt(2);
+		if(r == 1) {
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
-			logger.severe("TrovaAccompagnatoreIngleseCminCmin: Non ho trovato Accompagnatori");
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
+		} if (id == 0) {
+			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
+		} 
+
+		else {
+			logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -710,29 +1076,50 @@ public class Gestore {
 	public synchronized int trovaAccompagnatoreIngleseCminCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 		id = cercaLavoratoreClasse2ISCmin(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
-		} 
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
 				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
-			} 
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
+			}
 		}
 		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
+		}		
+		r = rand.nextInt(2);
+		if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		} if(r == 1) {
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+		} if (id == 0) {
+			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
+		}
+
+		else {
 			logger.severe("TrovaAccompagnatoreIngleseCminCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -744,30 +1131,52 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreIngleseCmaxCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
-		} 
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
-			} 
+			}
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
+		} if (id == 0) {
+			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
+		} 
+		r = rand.nextInt(2);
+		if(r == 1) {
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+
+		} else {
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
 		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
-		} else {
+		} 
+
+
+		else {
 			logger.severe("TrovaAccompagnatoreIngleseCmaxCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -779,30 +1188,53 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreIngleseCmaxCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
-		} 
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
-			} 
+			}
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
+			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
+		}
+		if(id == 0) {
 			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		}
+		r = rand.nextInt(2);
+		if(r == 1) {
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+		}
+		if (id == 0) {
+			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
+		}
+
+		else {
 			logger.severe("TrovaAccompagnatoreIngleseCmaxCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -815,29 +1247,67 @@ public class Gestore {
 	public synchronized int trovaAccompagnatoreIngleseCminRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 		id = cercaLavoratoreClasse2ISCmin(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
-		} 
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
 				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-			} 
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
+			}
 		}
 		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
-		} else {
+		}
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		}
+
+		else {
 			logger.severe("TrovaAccompagnatoreIngleseCminRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -849,30 +1319,68 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreIngleseCmaxRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
-		} 
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
+				id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-			} 
+			}
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
-		} else {
+			id = cercaLavoratoreClasse2ISCmax(durata, oraInizio, oraFine);
+		}
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		}
+
+		else {
 			logger.severe("TrovaAccompagnatoreIngleseCmaxRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -883,31 +1391,69 @@ public class Gestore {
 	 * Criteri: Rand Cmin
 	 */
 	public synchronized int trovaAccompagnatoreIngleseRandCmin(int durata, int oraInizio, int oraFine) {
-		int id = 0;
-		id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
+		int id=0;
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		} 
 		if (id == 0) {
 			id = cercaLavoratoreClasse2NISCmin(durata, oraInizio, oraFine);
 		} 
-		Random rand = new Random();
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
 				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
 			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+			}
+
 		} else {
 			if (id == 0) {
-				id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
 				id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
-			} 
-		}
-		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+			}
 		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
-		} else {
+		} 
+		else {
 			logger.severe("TrovaAccompagnatoreIngleseRandomCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -918,32 +1464,70 @@ public class Gestore {
 	 * Criteri: Rand Cmax
 	 */
 	public synchronized int trovaAccompagnatoreIngleseRandCmax(int durata, int oraInizio, int oraFine) {
-		int id = 0;
-
-		id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
-		} 
+		int id=0;
 		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		}  
+		if(id == 0) {
+			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		}
 		int r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
-				id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
+				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 			}
+
 		} else {
 			if (id == 0) {
-				id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
+				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			}
+			if (id == 0) {
 				id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
-			} 
+			}
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
-		} else {
+			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
+		}
+		else {
 			logger.severe("TrovaAccompagnatoreIngleseRandomCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -954,32 +1538,85 @@ public class Gestore {
 	 * Criteri: Rand Rand
 	 */
 	public synchronized int trovaAccompagnatoreIngleseRandRand(int durata, int oraInizio, int oraFine) {
-		int id = 0;
-
-		id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
-		} 
+		int id=0;
 		Random rand = new Random();
-		int r = rand.nextInt(2);
-		if(r == 1) {
-			if (id == 0) {
-				id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2ISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
 			}
-		} else {
-			if (id == 0) {
-				id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-			} if (id == 0) {
-				id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-			} 
 		}
-		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
-		} else {
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean due = false;
+			boolean tre = false;
+			boolean quattro = false;
+			boolean cinque = false;
+			while(due==false & tre==false & quattro==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 4 & quattro==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					quattro=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+				if(ran == 2 & due==false) {
+					id = cercaLavoratoreClasse2NISRandom(durata, oraInizio, oraFine);
+					due=true;
+					if(id != 0) {
+						due=true; tre=true; quattro=true; cinque=true;
+					}
+				}
+			}
+		}  
+		else {
 			logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -1024,15 +1661,19 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseCminCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
+
 		id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
-		} 
-		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
+		}
+		if (id == 0) {
+			id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+		}
+		if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
-		} else {
+		}
+
+		else {
 			logger.severe("TrovaAccompagnatoreFranceseCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -1044,15 +1685,15 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseCminCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
 		id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		}
+		if (id == 0) {
+			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 		} else {
 			logger.severe("TrovaAccompagnatoreFranceseCminCmax: Non ho trovato Accompagnatori");
 		}
@@ -1065,16 +1706,16 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseCmaxCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
+		if (id == 0) {
+			id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+		}
 		if (id == 0) {
 			id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
-		} else {
+		}  else {
 			logger.severe("TrovaAccompagnatoreFranceseCmaxCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -1086,16 +1727,16 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseCmaxCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
-		} else {
+		}
+		if (id == 0) {
+			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+		}  else {
 			logger.severe("TrovaAccompagnatoreFranceseCmaxCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -1107,17 +1748,36 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseCminRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
 		id = cercaLavoratoreClasse3ISCmin(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
+		}
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
 		}
 
-		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
-		} else {
+
+		else {
 			logger.severe("TrovaAccompagnatoreFranceseCminRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -1129,14 +1789,32 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseCmaxRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse3ISCmax(durata, oraInizio, oraFine);
+		}
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
 		} else {
 			logger.severe("TrovaAccompagnatoreFranceseCmaxRandom: Non ho trovato Accompagnatori");
 		}
@@ -1149,15 +1827,38 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseRandCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
+		} 
+		if(id == 0) {
+			
+		
+		id = cercaLavoratoreClasse3NISCmin(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
-		} else {
+		}
+		else {
 			logger.severe("TrovaAccompagnatoreFranceseRandomCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -1169,15 +1870,34 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseRandCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
+		} 
+		if(id == 0) {
+		id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 		} else {
 			logger.severe("TrovaAccompagnatoreFranceseRandomCmax: Non ho trovato Accompagnatori");
 		}
@@ -1190,16 +1910,52 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreFranceseRandRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
-		}
-		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
-		} else {
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
+		} 
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse3NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
+		} 
+		else {
 			logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
@@ -1244,13 +2000,15 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloCminCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
+
 		id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
-		} 
-		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
+		}
+		if (id == 0) {
+			id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+		}
+		if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		} else {
 			logger.severe("TrovaAccompagnatoreSpagnoloCminCmin: Non ho trovato Accompagnatori");
@@ -1264,15 +2022,15 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloCminCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
 		id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		}
+		if (id == 0) {
+			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
 		} else {
 			logger.severe("TrovaAccompagnatoreSpagnoloCminCmax: Non ho trovato Accompagnatori");
 		}
@@ -1285,14 +2043,14 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloCmaxCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
+		if (id == 0) {
+			id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
+		}
 		if (id == 0) {
 			id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		} else {
 			logger.severe("TrovaAccompagnatoreSpagnoloCmaxCmin: Non ho trovato Accompagnatori");
@@ -1306,15 +2064,15 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloCmaxCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		}
+		if (id == 0) {
+			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
 		} else {
 			logger.severe("TrovaAccompagnatoreSpagnoloCmaxCmax: Non ho trovato Accompagnatori");
 		}
@@ -1327,16 +2085,32 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloCminRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
 		id = cercaLavoratoreClasse4ISCmin(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-		}
-
-		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+		}
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
 		} else {
 			logger.severe("TrovaAccompagnatoreSpagnoloCminRandom: Non ho trovato Accompagnatori");
 		}
@@ -1349,14 +2123,32 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloCmaxRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
+		id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
 		if (id == 0) {
-			id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5ISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse4ISCmax(durata, oraInizio, oraFine);
+		}
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
 		} else {
 			logger.severe("TrovaAccompagnatoreSpagnoloCmaxRandom: Non ho trovato Accompagnatori");
 		}
@@ -1369,13 +2161,33 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloRandCmin(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-		id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
+		} 
+		if(id == 0) {
+		id = cercaLavoratoreClasse4NISCmin(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		} else {
 			logger.severe("TrovaAccompagnatoreSpagnoloRandomCmin: Non ho trovato Accompagnatori");
@@ -1389,15 +2201,34 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloRandCmax(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
+		} 
+		if(id == 0) {
+		id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
 		}
 		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
 		} else {
 			logger.severe("TrovaAccompagnatoreSpagnoloRandomCmax: Non ho trovato Accompagnatori");
 		}
@@ -1410,17 +2241,52 @@ public class Gestore {
 	 */
 	public synchronized int trovaAccompagnatoreSpagnoloRandRand(int durata, int oraInizio, int oraFine) {
 		int id = 0;
-
-		id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
-		if (id == 0) {
-			id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
-		}
-		if (id == 0) {
-			id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+		Random rand = new Random();
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5ISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse4ISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
+		} 
+		if(id == 0) {
+			int ran = rand.nextInt(6);
+			boolean tre = false;
+			boolean cinque = false;
+			while(tre==false & cinque==false) {
+				ran = rand.nextInt(6);
+				if(ran == 5 & cinque==false) {
+					id = cercaLavoratoreClasse5NISRandom(durata, oraInizio, oraFine);
+					cinque=true;
+					if(id != 0) {
+						tre=true;  cinque=true;
+					}
+				}
+				if(ran == 3 & tre==false) {
+					id = cercaLavoratoreClasse4NISRandom(durata, oraInizio, oraFine);
+					tre=true;
+					if(id != 0) {
+						tre=true; cinque=true;
+					}
+				}
+			}
 		} else {
-			logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
+			logger.severe("TrovaAccompagnatoreSpagnoloRandomRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1485,8 +2351,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse1ISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse1.size(); random.nextInt(lavoratoriClasse1.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse1.size(); i++) {
 
 			//Cerco un lavoratore in Servizio
 			if(lavoratoriClasse1.get(i).isInServizio() == true ) {
@@ -1557,8 +2423,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse1NISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse1.size(); random.nextInt(lavoratoriClasse1.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse1.size(); i++) {
 			if(lavoratoriClasse1.get(i).isInServizio() == false ) {	
 				//System.out.println("Entro nell'else");
 				id = lavoratoriClasse1.get(i).getIdentificatore();
@@ -1634,8 +2500,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse2ISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse2.size(); random.nextInt(lavoratoriClasse2.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse2.size(); i++) {
 
 			//Cerco un lavoratore in Servizio
 			if(lavoratoriClasse2.get(i).isInServizio() == true ) {
@@ -1706,8 +2572,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse2NISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse2.size(); random.nextInt(lavoratoriClasse2.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse2.size(); i++) {
 			if(lavoratoriClasse2.get(i).isInServizio() == false ) {	
 				//System.out.println("Entro nell'else");
 				id = lavoratoriClasse2.get(i).getIdentificatore();
@@ -1784,8 +2650,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse3ISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse3.size(); random.nextInt(lavoratoriClasse3.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse3.size(); i++) {
 
 			//Cerco un lavoratore in Servizio
 			if(lavoratoriClasse3.get(i).isInServizio() == true ) {
@@ -1856,8 +2722,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse3NISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse3.size(); random.nextInt(lavoratoriClasse3.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse3.size(); i++) {
 			if(lavoratoriClasse3.get(i).isInServizio() == false ) {	
 				//System.out.println("Entro nell'else");
 				id = lavoratoriClasse3.get(i).getIdentificatore();
@@ -1934,8 +2800,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse4ISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse4.size(); random.nextInt(lavoratoriClasse4.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse4.size(); i++) {
 
 			//Cerco un lavoratore in Servizio
 			if(lavoratoriClasse4.get(i).isInServizio() == true ) {
@@ -2006,8 +2872,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse4NISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse4.size(); random.nextInt(lavoratoriClasse4.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse4.size(); i++) {
 			if(lavoratoriClasse4.get(i).isInServizio() == false ) {	
 				//System.out.println("Entro nell'else");
 				id = lavoratoriClasse4.get(i).getIdentificatore();
@@ -2084,8 +2950,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse5ISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse5.size(); random.nextInt(lavoratoriClasse5.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse5.size(); i++) {
 
 			//Cerco un lavoratore in Servizio
 			if(lavoratoriClasse5.get(i).isInServizio() == true ) {
@@ -2156,8 +3022,8 @@ public class Gestore {
 	public synchronized int cercaLavoratoreClasse5NISRandom(int durata, int oraInizio, int oraFine) {
 		int id = 0;
 
-		Random random = new Random();
-		for(int i=0; i< lavoratoriClasse5.size(); random.nextInt(lavoratoriClasse5.size())) {
+		//Random random = new Random();
+		for(int i=0; i< lavoratoriClasse5.size(); i++) {
 			if(lavoratoriClasse5.get(i).isInServizio() == false ) {	
 				//System.out.println("Entro nell'else");
 				id = lavoratoriClasse5.get(i).getIdentificatore();
@@ -2175,9 +3041,9 @@ public class Gestore {
 		return id;
 	}
 
-/*
- * 
- */
+	/*
+	 * Metodi Database
+	 */
 	public synchronized void popolaLavoriDB() throws SQLException {
 		for (int i=0; i<lavori.size(); i++) {
 			DatabaseQuery.addLavoro(lavori.get(i));
@@ -2188,7 +3054,7 @@ public class Gestore {
 		DatabaseQuery.addLavoratore(m, L, istanza);
 	}
 
-	
+
 	public synchronized void getLavoriDB(String istanza) throws SQLException{
 		ArrayList <Lavoro> lav = new ArrayList<>();
 		lav = DatabaseQuery.getLavori(istanza);
@@ -2196,7 +3062,7 @@ public class Gestore {
 			lavori.add(i, lav.get(i));
 		}
 	}
-	
+
 	public synchronized void getLavoratoriDB(String istanza) throws SQLException{
 		LavoratoreDaDatabase l = DatabaseQuery.getLavoratori(istanza);
 		ArrayList <Lavoratore> lavorator = new ArrayList<>();
@@ -2244,6 +3110,60 @@ public class Gestore {
 			System.out.println(lavori.get(i));
 		}
 
+	}
+	/*
+	 * Verifica il numero p di passeggeri senza accompagnatore
+	 */
+	public synchronized int verificaPasseggeriSenzaAccompagnatori() {
+		int p = 0;
+		for(int i=0; i<lavori.size(); i++) {
+			if(lavori.get(i).getLavoratoreAssegnato() == 0) {
+				p++;
+			}
+		}
+		return p;
+	}
+	
+	public synchronized int verificaAccompagnatoriInServizio() {
+		int lavInServizio = 0;
+		for(int i=0; i<lavoratoriClasse1.size(); i++) {
+			if(lavoratoriClasse1.get(i).isInServizio() == true) {
+				lavInServizio++;
+			}
+		}
+		for(int i=0; i<lavoratoriClasse2.size(); i++) {
+			if(lavoratoriClasse2.get(i).isInServizio() == true) {
+				lavInServizio++;
+			}
+		}
+		for(int i=0; i<lavoratoriClasse3.size(); i++) {
+			if(lavoratoriClasse3.get(i).isInServizio() == true) {
+				lavInServizio++;
+			}
+		}
+		for(int i=0; i<lavoratoriClasse4.size(); i++) {
+			if(lavoratoriClasse4.get(i).isInServizio() == true) {
+				lavInServizio++;
+			}
+		}
+		for(int i=0; i<lavoratoriClasse5.size(); i++) {
+			if(lavoratoriClasse5.get(i).isInServizio() == true) {
+				lavInServizio++;
+			}
+		}
+		return lavInServizio;
+	}
+	
+
+	public void stampaFinale() {
+		stampaArrayLavori();
+		stampaArrayLavoratori();
+		int y = verificaAccompagnatoriInServizio();
+		int u = verificaPasseggeriSenzaAccompagnatori();
+		System.out.println("Lavoratori utilizzati: "+y+"/" +m);
+		System.out.println("Passeggeri senza accompagnatore: " +u);
+		System.out.println("Tempo del Selection sort: "+tempoSelectionSort+" Millisecondi");
+		System.out.println("Tempo dell'algoritmo principale: "+tempoAlgoritmo+" Millisecondi");
 	}
 }
 

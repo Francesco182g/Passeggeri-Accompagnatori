@@ -43,11 +43,11 @@ public class MainTest {
 			String criterio2 = JOptionPane.showInputDialog("Definisci il criterio per gli accompagnatori non in servizio. 1.Cmin, 2.Cmax, 3.Random");
 			int c2 = Integer.parseInt(criterio2);
 			
-			//gestore.ordinaPasseggeriInArray();
+			gestore.ordinaPasseggeriInArray();
 			gestore.trovaAccompagnatore(c1, c2);
 			JOptionPane.showInputDialog("Stampa");
-			gestore.stampaArrayLavoratori();
-			gestore.stampaArrayLavori();
+			gestore.stampaFinale();
+			
 			/*
 			 * Seconda scelta Crea istanza
 			 */
@@ -55,8 +55,17 @@ public class MainTest {
 			/*
 			 * Inizializzazione con n,m,L
 			 */
-			String scelta2 = JOptionPane.showInputDialog("Definisci il numero di passeggeri");
-			int n = Integer.parseInt(scelta2);
+			String it = JOptionPane.showInputDialog("Definisci il numero di passeggeri Italiani");
+			int ita = Integer.parseInt(it);
+			
+			String en = JOptionPane.showInputDialog("Definisci il numero di passeggeri Inglesi");
+			int eng = Integer.parseInt(en);
+			
+			String sp = JOptionPane.showInputDialog("Definisci il numero di passeggeri Francesi");
+			int spa = Integer.parseInt(sp);
+			
+			String fr = JOptionPane.showInputDialog("Definisci il numero di passeggeri Spagnoli");
+			int fra = Integer.parseInt(fr);
 			
 			String scelta3 = JOptionPane.showInputDialog("Definisci il numero di accompagnatori");
 			int m = Integer.parseInt(scelta3);
@@ -75,7 +84,7 @@ public class MainTest {
 			 */
 			String istanza = JOptionPane.showInputDialog("Definisci il nome dell'istanza:");
 			gestore.aggiungiAccompagnatori(m, L, istanza);
-			gestore.aggiungiPasseggeri(n, istanza);
+			gestore.aggiungiPasseggeri(ita, eng, fra, spa, istanza);
 			gestore.ordinaPasseggeriInArray();
 			//Chiedo all'utente se vuole rendere persistente l'istanza
 			String perstok = JOptionPane.showInputDialog("Vuoi rendere persistente l'istanza? 1.Si 2.NO");
@@ -102,8 +111,7 @@ public class MainTest {
 			gestore.trovaAccompagnatore(c1, c2);
 			System.out.println("Ho ordinato i passeggeri.");
 			JOptionPane.showInputDialog("Stampa");
-			gestore.stampaArrayLavoratori();
-			gestore.stampaArrayLavori();
+			gestore.stampaFinale();
 
 		} else if(s1 == 3) {
 			String istanza = JOptionPane.showInputDialog("Inserisci il nome dell'istanza: ");
