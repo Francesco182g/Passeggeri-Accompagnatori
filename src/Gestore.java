@@ -134,7 +134,7 @@ public class Gestore {
 			lavoro.setLingua("ita");
 			Random random = new Random();
 			lavoro.setOraInizio(random.nextInt(200));//Valore max 
-			int durata = random.nextInt(35-5) + 5;
+			int durata = random.nextInt(36) + 5; //RANGE MIN:5, MAX:40
 			lavoro.setDurata(durata);
 			lavoro.setOraFine(lavoro.getOraInizio() + durata);
 			lavoro.setLavoratoreAssegnato(0);
@@ -150,7 +150,7 @@ public class Gestore {
 			lavoro.setLingua("eng");
 			Random random = new Random();
 			lavoro.setOraInizio(random.nextInt(200));//Valore max 
-			int durata = random.nextInt(10-5) + 5;
+			int durata = random.nextInt(36) + 5; //RANGE MIN:5, MAX:40
 			lavoro.setDurata(durata);
 			lavoro.setOraFine(lavoro.getOraInizio() + durata);
 			lavoro.setLavoratoreAssegnato(0);
@@ -166,7 +166,7 @@ public class Gestore {
 			lavoro.setLingua("fra");
 			Random random = new Random();
 			lavoro.setOraInizio(random.nextInt(200));//Valore max 240
-			int durata = random.nextInt(10-5) + 5;
+			int durata = random.nextInt(36) + 5; //RANGE MIN:5, MAX:40
 			lavoro.setDurata(durata);
 			lavoro.setOraFine(lavoro.getOraInizio() + durata);
 			lavoro.setLavoratoreAssegnato(0);
@@ -182,7 +182,7 @@ public class Gestore {
 			lavoro.setLingua("spa");
 			Random random = new Random();
 			lavoro.setOraInizio(random.nextInt(200));//Valore max 240
-			int durata = random.nextInt(10-5) + 5;
+			int durata = random.nextInt(36) + 5; //RANGE MIN:5, MAX:40
 			lavoro.setDurata(durata);
 			lavoro.setOraFine(lavoro.getOraInizio() + durata);
 			lavoro.setLavoratoreAssegnato(0);
@@ -197,7 +197,7 @@ public class Gestore {
 	 */
 	public synchronized void ordinaPasseggeriInArray()  {
 		logger.info("Algoritmo ordinamento: Inizio l'ordinamento");
-		long startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis(); //Inizio tempo selection sort
 		for(int i=0; i<lavori.size(); i++) {
 			for(int j=0; j<lavori.size(); j++) {
 				if(lavori.get(i).getOraInizio() < lavori.get(j).getOraInizio()) {
@@ -211,7 +211,7 @@ public class Gestore {
 				}
 			}
 		}
-		long endTime = System.currentTimeMillis();
+		long endTime = System.currentTimeMillis(); // Fine Selection Sort
 		tempoSelectionSort  = endTime - startTime;
 		logger.info("Algoritmo ordinamento: Fine l'ordinamento");
 	}
@@ -225,7 +225,7 @@ public class Gestore {
 		long startTime = System.currentTimeMillis();
 		for(int i=0; i< lavori.size(); i++) {
 			if(lavori.get(i).getLingua().equals("ita")) {
-				logger.info("Istanza: " +lavori.get(i).toString());
+				//logger.info("Istanza: " +lavori.get(i).toString());
 				int id = trovaAccompagnatoreItaliano(lavori.get(i).getDurata(), lavori.get(i).getOraInizio(), lavori.get(i).getOraFine(), c1, c2);
 				if(id != 0) {
 					lavori.get(i).setLavoratoreAssegnato(id);
@@ -350,7 +350,7 @@ public class Gestore {
 		} 
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -386,10 +386,8 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse5ISCmin(durata, oraInizio, oraFine);
 		} if (id == 0) {
-			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
-		} if (id == 0) {
-			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
-		} 
+			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+		}
 		r = rand.nextInt(2);
 		if(r == 1) {
 			if (id == 0) {
@@ -407,11 +405,13 @@ public class Gestore {
 				id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 			}
 		} if (id == 0) {
-			id = cercaLavoratoreClasse5NISCmax(durata, oraInizio, oraFine);
+			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
+		}  if (id == 0) {
+			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
 		} 
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoCminCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoCminCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -472,7 +472,7 @@ public class Gestore {
 		} 
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoCmaxCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -532,7 +532,7 @@ public class Gestore {
 		} 
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoCmaxCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -617,7 +617,7 @@ public class Gestore {
 		}
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoCminCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoCminCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -702,7 +702,7 @@ public class Gestore {
 
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoCmaxRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoCmaxRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -786,7 +786,7 @@ public class Gestore {
 		} 
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoRandomCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoRandomCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -868,7 +868,7 @@ public class Gestore {
 			id = cercaLavoratoreClasse1NISCmax(durata, oraInizio, oraFine);
 		} 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoRandomCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoRandomCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -974,7 +974,7 @@ public class Gestore {
 		}
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1064,7 +1064,7 @@ public class Gestore {
 		} 
 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoCminCmin: Non ho trovato Accompagnatori");
+		//logger.severe("TrovaAccompagnatoreIngleseCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1120,7 +1120,7 @@ public class Gestore {
 		}
 
 		else {
-			logger.severe("TrovaAccompagnatoreIngleseCminCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreIngleseCminCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1177,7 +1177,7 @@ public class Gestore {
 
 
 		else {
-			logger.severe("TrovaAccompagnatoreIngleseCmaxCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreIngleseCmaxCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1235,7 +1235,7 @@ public class Gestore {
 		}
 
 		else {
-			logger.severe("TrovaAccompagnatoreIngleseCmaxCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreIngleseCmaxCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1308,7 +1308,7 @@ public class Gestore {
 		}
 
 		else {
-			logger.severe("TrovaAccompagnatoreIngleseCminRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreIngleseCminRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1381,7 +1381,7 @@ public class Gestore {
 		}
 
 		else {
-			logger.severe("TrovaAccompagnatoreIngleseCmaxRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreIngleseCmaxRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1454,7 +1454,7 @@ public class Gestore {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		} 
 		else {
-			logger.severe("TrovaAccompagnatoreIngleseRandomCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreIngleseRandomCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1528,7 +1528,7 @@ public class Gestore {
 			id = cercaLavoratoreClasse2NISCmax(durata, oraInizio, oraFine);
 		}
 		else {
-			logger.severe("TrovaAccompagnatoreIngleseRandomCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreIngleseRandomCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1617,7 +1617,7 @@ public class Gestore {
 			}
 		}  
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreIngleseRandomRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1628,6 +1628,7 @@ public class Gestore {
 	/*
 	 * Metodo per trovare accompagnatori Francesi
 	 * Input: C1, C2, durata, orainzio, orafine
+	 *PS: i metodi random francesi e spagnoli andrebbero risettati con rand(3) e settare le rand 5 e 3 con 1 e 2 per migliorare l'efficienza
 	 */
 	public synchronized int trovaAccompagnatoreFrancese(int durata, int oraInizio, int oraFine, int c1, int c2) {
 		int id = 0;
@@ -1674,7 +1675,7 @@ public class Gestore {
 		}
 
 		else {
-			logger.severe("TrovaAccompagnatoreFranceseCminCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreFranceseCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1695,7 +1696,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 		} else {
-			logger.severe("TrovaAccompagnatoreFranceseCminCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreFranceseCminCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1716,7 +1717,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		}  else {
-			logger.severe("TrovaAccompagnatoreFranceseCmaxCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreFranceseCmaxCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1737,7 +1738,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 		}  else {
-			logger.severe("TrovaAccompagnatoreFranceseCmaxCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreFranceseCmaxCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1778,7 +1779,7 @@ public class Gestore {
 
 
 		else {
-			logger.severe("TrovaAccompagnatoreFranceseCminRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreFranceseCminRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1816,7 +1817,7 @@ public class Gestore {
 				}
 			}
 		} else {
-			logger.severe("TrovaAccompagnatoreFranceseCmaxRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreFranceseCmaxRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1859,7 +1860,7 @@ public class Gestore {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		}
 		else {
-			logger.severe("TrovaAccompagnatoreFranceseRandomCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreFranceseRandomCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1899,7 +1900,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse3NISCmax(durata, oraInizio, oraFine);
 		} else {
-			logger.severe("TrovaAccompagnatoreFranceseRandomCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreFranceseRandomCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -1956,7 +1957,7 @@ public class Gestore {
 			}
 		} 
 		else {
-			logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreItalianoRandomRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2011,7 +2012,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloCminCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreSpagnoloCminCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2032,7 +2033,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloCminCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreSpagnoloCminCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2053,7 +2054,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloCmaxCmin: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreSpagnoloCmaxCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2074,7 +2075,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloCmaxCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreSpagnoloCmaxCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2112,7 +2113,7 @@ public class Gestore {
 				}
 			}
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloCminRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreSpagnoloCminRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2150,7 +2151,7 @@ public class Gestore {
 				}
 			}
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloCmaxRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreSpagnoloCmaxRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2190,7 +2191,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse5NISCmin(durata, oraInizio, oraFine);
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloRandomCmin: Non ho trovato Accompagnatori");
+		//	logger.severe("TrovaAccompagnatoreSpagnoloRandomCmin: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2230,7 +2231,7 @@ public class Gestore {
 		if (id == 0) {
 			id = cercaLavoratoreClasse4NISCmax(durata, oraInizio, oraFine);
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloRandomCmax: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreSpagnoloRandomCmax: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
@@ -2286,7 +2287,7 @@ public class Gestore {
 				}
 			}
 		} else {
-			logger.severe("TrovaAccompagnatoreSpagnoloRandomRandom: Non ho trovato Accompagnatori");
+			//logger.severe("TrovaAccompagnatoreSpagnoloRandomRandom: Non ho trovato Accompagnatori");
 		}
 		return id;
 	}
